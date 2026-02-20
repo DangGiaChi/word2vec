@@ -1,5 +1,7 @@
 # Word2Vec Implementation
 
+*by **Gia Chi Dang***
+
 Skip-gram model with negative sampling implemented in pure NumPy.
 
 ## Files
