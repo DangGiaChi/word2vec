@@ -4,21 +4,54 @@ from word2vec import SkipGram, Vocabulary
 np.random.seed(42)
 
 corpus_text = """
-the quick brown fox jumps over the lazy dog
-the dog barks at the cat
-the cat sleeps on the mat
-a brown cat and a black dog play together
-the fox runs through the forest
-dogs and cats are popular pets
-the lazy cat rests under the tree
-a quick rabbit hops near the fox
-the brown rabbit eats fresh grass
-birds fly over the tall tree
-the dog and cat are friends
-cats enjoy sleeping in sunny spots
-the quick fox hunts in the forest
-rabbits hop around the garden
-dogs play fetch with their owners
+the king rules the kingdom with wisdom
+the queen sits on the throne beside the king
+a prince and princess live in the castle
+the royal family governs the nation
+a king wears a golden crown
+the queen wears a beautiful dress
+the doctor examines the patient carefully
+a nurse helps the doctor in the hospital
+hospitals provide medical care to patients
+the surgeon performs operations in the hospital
+doctors and nurses work together
+medical treatment saves many lives
+the programmer writes code on the computer
+software engineers develop new applications
+the computer runs programs quickly
+coding requires logical thinking
+programmers debug software errors
+technology companies hire many engineers
+a chef cooks delicious food in the kitchen
+the restaurant serves fresh meals daily
+people enjoy eating at nice restaurants
+the cook prepares ingredients carefully
+chefs create new recipes frequently
+good food brings people together
+students study hard for exams
+the teacher explains lessons clearly
+schools educate young people
+a professor lectures at the university
+learning requires dedication and practice
+education opens many opportunities
+the artist paints beautiful pictures
+musicians play instruments skillfully
+the painter uses bright colors
+art galleries display creative works
+music and painting inspire people
+creative expression enriches life
+the athlete trains every day
+football players compete in matches
+the team won the championship game
+sports require physical fitness
+exercise keeps the body healthy
+competition builds strong character
+rain falls from dark clouds
+the sun shines brightly today
+winter brings cold weather
+snow covers the mountains
+weather affects outdoor activities
+climate changes with seasons
 """
 
 def preprocess_text(text):
@@ -54,6 +87,7 @@ def generate_training_pairs(sentences, vocab, window_size=2):
 
 def train(model, pairs, epochs=10, verbose=True):
     num_pairs = len(pairs)
+    loss_history = []
     
     for epoch in range(epochs):
         np.random.shuffle(pairs)
@@ -64,9 +98,12 @@ def train(model, pairs, epochs=10, verbose=True):
             total_loss += loss
         
         avg_loss = total_loss / num_pairs
+        loss_history.append(avg_loss)
         
         if verbose and (epoch + 1) % 2 == 0:
             print(f"Epoch {epoch + 1}/{epochs}, Average Loss: {avg_loss:.4f}")
+    
+    return loss_history
 
 
 def main():
@@ -96,32 +133,21 @@ def main():
     
     print("\nTraining model...")
     print("-" * 60)
-    train(model, pairs, epochs=20, verbose=True)
+    loss_history = train(model, pairs, epochs=25, verbose=True)
     print("-" * 60)
     
-    print("\nTesting learned embeddings:")
-    print("=" * 60)
+    np.savez('model_data.npz', 
+             W_in=model.W_in, 
+             W_out=model.W_out,
+             loss_history=loss_history,
+             vocab_size=model.vocab_size,
+             embedding_dim=model.embedding_dim)
     
-    test_words = ['dog', 'cat', 'fox', 'tree']
+    import pickle
+    with open('vocab.pkl', 'wb') as f:
+        pickle.dump(vocab, f)
     
-    for word in test_words:
-        if word in vocab.word2idx:
-            word_idx = vocab.word2idx[word]
-            similar = model.most_similar(word_idx, top_k=5)
-            
-            print(f"\nMost similar words to '{word}':")
-            for idx, sim in similar:
-                similar_word = vocab.idx2word[idx]
-                print(f"  - {similar_word}: {sim:.4f}")
-    
-    print("\n" + "=" * 60)
-    print("Example: Embedding vector for 'dog'")
-    print("=" * 60)
-    if 'dog' in vocab.word2idx:
-        dog_idx = vocab.word2idx['dog']
-        dog_embedding = model.get_embedding(dog_idx)
-        print(f"Shape: {dog_embedding.shape}")
-        print(f"First 10 dimensions: {dog_embedding[:10]}")
+    print("\nModel and vocabulary saved to model_data.npz and vocab.pkl")
 
 
 if __name__ == "__main__":
