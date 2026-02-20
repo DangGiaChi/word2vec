@@ -5,7 +5,7 @@ import pickle
 import os
 
 def load_model():
-    data = np.load('model_data.npz')
+    data = np.load('model/model_data.npz')
     
     model = SkipGram(
         vocab_size=int(data['vocab_size']),
@@ -16,7 +16,7 @@ def load_model():
     
     loss_history = data['loss_history']
     
-    with open('vocab.pkl', 'rb') as f:
+    with open('model/vocab.pkl', 'rb') as f:
         vocab = pickle.load(f)
     
     return model, vocab, loss_history

@@ -136,7 +136,10 @@ def main():
     loss_history = train(model, pairs, epochs=25, verbose=True)
     print("-" * 60)
     
-    np.savez('model_data.npz', 
+    import os
+    os.makedirs('model', exist_ok=True)
+    
+    np.savez('model/model_data.npz', 
              W_in=model.W_in, 
              W_out=model.W_out,
              loss_history=loss_history,
@@ -144,10 +147,10 @@ def main():
              embedding_dim=model.embedding_dim)
     
     import pickle
-    with open('vocab.pkl', 'wb') as f:
+    with open('model/vocab.pkl', 'wb') as f:
         pickle.dump(vocab, f)
     
-    print("\nModel and vocabulary saved to model_data.npz and vocab.pkl")
+    print("\nModel and vocabulary saved to model/model_data.npz and model/vocab.pkl")
 
 
 if __name__ == "__main__":
